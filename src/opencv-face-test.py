@@ -30,13 +30,13 @@ def captureUserTarget():
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 2)
 
         # shows img and waits and changes servo positioning
+        frame = trackUser(frame)
         cv2.imshow('Video', frame)
-        trackUser()
         cv2.waitKey(20)
 
 
 
-def trackUser():
+def trackUser(img):
     if(capture.isOpened() and len(faces) > 0):
         print("")
         capture_height = capture.get(4)
@@ -45,7 +45,16 @@ def trackUser():
         f = faces[0]
         x = (f[0]+f[2])/capture_width
         y = (f[1]+f[3])/capture_height
-        help.printf("X: %0.2f Y:%0.2f",x, y)
+        # help.printf("X: %0.2f Y:%0.2f",x, y)
+        text = "X: {:0.0f}% Y: {:0.0f}%".format(x*100, y*100)
+        cv2.putText(img, text, 
+            (10,int(capture_height)-25), 
+            cv2.FONT_HERSHEY_SIMPLEX, 
+            1,
+            (255,255,255),
+            2)
+
+    return img
 
 #Detection Thred
 capture_thread = threading.Thread(target=captureUserTarget, args=())
