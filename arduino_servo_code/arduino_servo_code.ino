@@ -1,4 +1,4 @@
-  #include <Servo.h>
+#include <Servo.h>
 
 //hardware vars
 Servo tilt_servo;
@@ -15,7 +15,6 @@ bool rotationChange = false;
 void setup() {
   pinMode(relay_pin, OUTPUT);
   Serial.begin(9600);
-  Serial.setTimeout(10000);
   base_servo.attach(base_servo_pin);
   base_servo.write(base_servo_value);
   tilt_servo.attach(tilt_servo_pin);
@@ -47,6 +46,7 @@ void serialEvent() {
       } else if(inByteB=="b"){
          digitalWrite(relay_pin, LOW);
       }
-    } 
+    }
+    
   }
 }
