@@ -4,6 +4,7 @@ import time
 import atexit
 import helper_functions as help
 import serial
+import random
 
 # important fields
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -26,8 +27,6 @@ def captureUserTarget():
 
         # checks for face and then eyes if unavailable
         faces = face_classifier.detectMultiScale(gray, 1.1, 4)
-        # if(len(faces) == 0):
-        #     faces = eye_classifier.detectMultiScale(gray, 1.1, 4)
 
         # draws around users face
         for (x, y, w, h) in faces:
@@ -101,40 +100,44 @@ def setServos(x,y):
     except:
         print("An exception occurred") 
 
+def numatic_loop:
+    frequency = 5 #difficulty [1 - 10]
+    delay_time = frequency*-1+11
+
+    # starts fsm
+    while True:
+        # lock = True
+        rs = "b|a\n";
+        try:
+            arduino.write(str.encode(rs))
+        except:
+            print("An exception occurred") 
+        time.sleep(0.5) #time for the cylender to remain extended
+        rs = "b|b\n";
+        try:
+            arduino.write(str.encode(rs))
+        except:
+            print("An exception occurred")     # lock = False
+        time.sleep(random.uniform(0.5, 5.0)) #time in between 'punches'
+
 #Detection Thred
 capture_thread = threading.Thread(target=captureUserTarget, args=())
+capture_thread_2 = threading.Thread(target=numatic_loop, args=())
+
 
 #on exit
 def exit_handler():
     capture_thread.join()
+    capture_thread_2.join()
     capture.release()
+    capture_thread_2.release()
     cv2.destroyAllWindows()
 #closes windows and threads prior to exiting
 atexit.register(exit_handler)
 
 # main thread
 capture_thread.start() # starts face tracking in the background
-# gets menu input
-frequency = 5 #difficulty [1 - 10]
-delay_time = frequency*-1+11
-# starts fsm
-while True:
-    # lock = True
-    rs = "b|a\n";
-    try:
-        arduino.write(str.encode(rs))
-    except:
-        print("An exception occurred") 
-    time.sleep(0.5) #time for the cylender to remain extended
-    rs = "b|b\n";
-    try:
-        arduino.write(str.encode(rs))
-    except:
-
-
-        print("An exception occurred")     # lock = False
-    # time.sleep(delay_time/10)
-    time.sleep(1) #time in between 'punches'
+capture_thread_2.start() #starts punching
     
 
     
